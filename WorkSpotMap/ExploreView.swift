@@ -1,8 +1,12 @@
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct ExploreView: View {
     @EnvironmentObject private var store: SpotStore
+    @EnvironmentObject private var location: LocationService
+    @State private var showNearby = false
+    @State private var centerOnNextFix = false
     @State private var query = ""
     @State private var camera: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 35.695, longitude: 139.705), span: MKCoordinateSpan(latitudeDelta: 0.065, longitudeDelta: 0.065)))
     @State private var searchResultName = "東京・早稲田付近"
@@ -22,6 +26,7 @@ struct ExploreView: View {
 
     var body: some View {
         NavigationStack {
+            ScrollView {
             VStack(spacing: 10) {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
@@ -37,6 +42,16 @@ struct ExploreView: View {
                 .padding(12)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
+
+                HStack {
+                    Button { centerOnNextFix = true; location.requestNearby() } label: {
+                        Label("現在地", systemImage: "location.fill")
+                    }
+                    Button("近隣サンプル施設") { showNearby = true }
+                        .disabled(location.location == nil)
+                    Spacer()
+                }.font(.subheadline).padding(.horizontal)
+                Text(location.status).font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
@@ -55,6 +70,11 @@ struct ExploreView: View {
                 GeometryReader { geometry in
                     ZStack(alignment: .top) {
                         Map(position: $camera) {
+                            if let fix = location.location {
+                                Annotation("現在地（概算）", coordinate: fix.coordinate) {
+                                    Image(systemName: "location.circle.fill").font(.title).foregroundStyle(.blue)
+                                }
+                            }
                             ForEach(filtered) { spot in
                                 Annotation("", coordinate: spot.coordinate, anchor: .bottom) {
                                     Button { selectedSpot = spot } label: {
@@ -153,6 +173,38 @@ struct ExploreView: View {
                 .padding(.horizontal, 8)
                 Spacer(minLength: 0)
             }
+            }
+            .onChange(of: location.location) { _, fix in
+                if centerOnNextFix, let fix {
+                    centerOnNextFix = false
+                    camera = .region(.init(center: fix.coordinate, span: .init(latitudeDelta: 0.06, longitudeDelta: 0.06)))
+                    searchResultName = "現在地周辺（サンプル施設のみ）"
+                    showNearby = true
+                }
+            }
+            .sheet(isPresented: $showNearby) {
+                NavigationStack {
+                    List {
+                        Section {
+                            Text("現在地から3km以内のサンプル施設です。実在施設の検索・空席情報ではありません。")
+                            if nearby.isEmpty { Text("近隣のサンプル施設はありません。50件のサンプルは新宿・早稲田周辺にあります。") }
+                            ForEach(nearby, id: \.spot.id) { item in
+                                NavigationLink {
+                                    SpotDetailView(spot: item.spot)
+                                } label: {
+                                    VStack(alignment: .leading) {
+                                        Text(item.spot.name)
+                                        Text("約\(Int(item.distance))m・\(item.spot.category.rawValue)")
+                                            .font(.caption).foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .navigationTitle("近隣サンプル施設")
+                    .toolbar { Button("閉じる") { showNearby = false } }
+                }
+            }
             .navigationTitle("空席マップ")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $selectedSpot) { spot in
@@ -165,6 +217,12 @@ struct ExploreView: View {
                 Button("OK") { searchError = nil }
             } message: { Text(searchError ?? "") }
         }
+    }
+
+    private var nearby: [(spot: Spot, distance: Double)] {
+        guard let fix = location.location else { return [] }
+        return filtered.map { ($0, fix.distance(from: CLLocation(latitude: $0.latitude, longitude: $0.longitude))) }
+            .filter { $0.1 <= 3000 }.sorted { $0.1 < $1.1 }
     }
 
     private func categoryButton(_ category: SpotCategory?, text: String) -> some View {
@@ -186,6 +244,7 @@ struct ExploreView: View {
     private func searchPlace() async {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
+        centerOnNextFix = false
         isSearching = true
         defer { isSearching = false }
         let request = MKLocalSearch.Request()
