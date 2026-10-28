@@ -110,7 +110,9 @@ struct ExploreView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 13))
                 }
                 .aspectRatio(1, contentMode: .fit)
+                .frame(maxWidth: 560)
                 .padding(.horizontal, 8)
+                .frame(maxWidth: .infinity)
 
                 HStack(spacing: 24) {
                     Button { showSearch = true } label: { Label("検索", systemImage: "magnifyingglass") }
@@ -122,29 +124,13 @@ struct ExploreView: View {
                 }.font(.subheadline).padding()
                 Text(location.status).font(.caption).foregroundStyle(.secondary).padding(.horizontal)
 
-                HStack(spacing: 12) {
-                    RoundedRectangle(cornerRadius: 9)
-                        .fill(Color.teal.opacity(0.13))
-                        .frame(width: 62, height: 62)
-                        .overlay(Image(systemName: "cup.and.saucer.fill").font(.title2).foregroundStyle(.teal))
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 6) {
-                            Text("広告スペース（サンプル）").font(.subheadline.bold())
-                            Text("広告").font(.system(size: 10)).padding(3)
-                                .background(Color.gray.opacity(0.14), in: RoundedRectangle(cornerRadius: 3))
-                        }
-                        Text("作業場所を探している人に向けた広告枠")
-                            .font(.caption).foregroundStyle(.secondary)
-                        Text("実際の広告配信・課金は未接続")
-                            .font(.caption2).foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .padding(12)
-                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 13))
-                .padding(.horizontal, 8)
                 Spacer(minLength: 0)
             }
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                advertisement
+                    .padding(.vertical, 8)
+                    .background(.regularMaterial)
             }
             .onChange(of: location.location) { _, fix in
                 if centerOnNextFix, let fix {
@@ -229,6 +215,31 @@ struct ExploreView: View {
                 Button("OK") { searchError = nil }
             } message: { Text(searchError ?? "") }
         }
+    }
+
+    // Advertising stays visible outside the scrollable square map area.
+    private var advertisement: some View {
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 9)
+                        .fill(Color.teal.opacity(0.13))
+                        .frame(width: 62, height: 62)
+                        .overlay(Image(systemName: "cup.and.saucer.fill").font(.title2).foregroundStyle(.teal))
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
+                            Text("広告スペース（サンプル）").font(.subheadline.bold())
+                            Text("広告").font(.system(size: 10)).padding(3)
+                                .background(Color.gray.opacity(0.14), in: RoundedRectangle(cornerRadius: 3))
+                        }
+                        Text("作業場所を探している人に向けた広告枠")
+                            .font(.caption).foregroundStyle(.secondary)
+                        Text("実際の広告配信・課金は未接続")
+                            .font(.caption2).foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(12)
+                .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 13))
+                .padding(.horizontal, 8)
     }
 
     private var nearby: [(spot: Spot, distance: Double)] {

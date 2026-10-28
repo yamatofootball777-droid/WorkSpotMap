@@ -54,3 +54,10 @@ swiftc WorkSpotMap/VisitHistory.swift Tests/VisitHistoryChecks.swift -o /tmp/wor
 swiftc WorkSpotMap/Models.swift WorkSpotMap/FacilityProfile.swift WorkSpotMap/SpotStore.swift Tests/FacilityProfileChecks.swift -o /tmp/workspot-profile-checks
 /tmp/workspot-profile-checks
 ```
+
+## 固定する画面方針
+- 地図は必ず正方形（縦横比1:1）。全画面の縦長・横長地図には変更しません。
+- 広告はスクロール領域の外、下部タブの上に固定。検索・現在地の操作や地図のスクロールで画面外に流れません。
+- 広い画面では地図の最大幅を560ptに抑えて中央配置。狭い画面では利用可能幅に合わせて正方形を縮小します。
+- 画面の高さが足りない場合も広告領域を先に確保し、地図側をスクロールできます。
+- 地図サービスの選択より見やすさを優先。ただし現在のアプリはiOS/iPadOS用であり、Android・Web対応を追加したわけではありません。
