@@ -5,6 +5,7 @@ import CoreLocation
 struct ExploreView: View {
     @EnvironmentObject private var store: SpotStore
     @EnvironmentObject private var location: LocationService
+    @State private var showSearch = false
     @State private var showNearby = false
     @State private var centerOnNextFix = false
     @State private var query = ""
@@ -28,45 +29,6 @@ struct ExploreView: View {
         NavigationStack {
             ScrollView {
             VStack(spacing: 10) {
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("駅名・地名で探す（例：梅田駅）", text: $query)
-                        .textInputAutocapitalization(.never)
-                        .submitLabel(.search)
-                        .onSubmit { Task { await searchPlace() } }
-                        .accessibilityLabel("駅名または地名")
-                    if isSearching { ProgressView().controlSize(.small) }
-                    Button("検索") { Task { await searchPlace() } }
-                        .disabled(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSearching)
-                }
-                .padding(12)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal)
-
-                HStack {
-                    Button { centerOnNextFix = true; location.requestNearby() } label: {
-                        Label("現在地", systemImage: "location.fill")
-                    }
-                    Button("近隣サンプル施設") { showNearby = true }
-                        .disabled(location.location == nil)
-                    Spacer()
-                }.font(.subheadline).padding(.horizontal)
-                Text(location.status).font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        categoryButton(nil, text: "すべて")
-                        ForEach(SpotCategory.allCases) { category in
-                            categoryButton(category, text: category.rawValue)
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-
-                Toggle("空いている施設のみ", isOn: $showOnlyAvailable)
-                    .font(.subheadline)
-                    .padding(.horizontal)
-
                 GeometryReader { geometry in
                     ZStack(alignment: .top) {
                         Map(position: $camera) {
@@ -150,6 +112,16 @@ struct ExploreView: View {
                 .aspectRatio(1, contentMode: .fit)
                 .padding(.horizontal, 8)
 
+                HStack(spacing: 24) {
+                    Button { showSearch = true } label: { Label("検索", systemImage: "magnifyingglass") }
+                    Spacer()
+                    Button { centerOnNextFix = true; location.requestNearby() } label: {
+                        Label("現在地", systemImage: "location")
+                    }
+                    Button("近隣") { showNearby = true }.disabled(location.location == nil)
+                }.font(.subheadline).padding()
+                Text(location.status).font(.caption).foregroundStyle(.secondary).padding(.horizontal)
+
                 HStack(spacing: 12) {
                     RoundedRectangle(cornerRadius: 9)
                         .fill(Color.teal.opacity(0.13))
@@ -205,8 +177,48 @@ struct ExploreView: View {
                     .toolbar { Button("閉じる") { showNearby = false } }
                 }
             }
-            .navigationTitle("空席マップ")
-            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showSearch) {
+                NavigationStack {
+                    VStack(spacing: 20) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    TextField("駅名・地名で探す（例：梅田駅）", text: $query)
+                        .textInputAutocapitalization(.never)
+                        .submitLabel(.search)
+                        .onSubmit { Task { await searchPlace() } }
+                        .accessibilityLabel("駅名または地名")
+                    if isSearching { ProgressView().controlSize(.small) }
+                    Button("検索") { Task { await searchPlace() } }
+                        .disabled(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSearching)
+                }
+                .padding(12)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        categoryButton(nil, text: "すべて")
+                        ForEach(SpotCategory.allCases) { category in
+                            categoryButton(category, text: category.rawValue)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+
+                Toggle("空いている施設のみ", isOn: $showOnlyAvailable)
+                    .font(.subheadline)
+                    .padding(.horizontal)
+
+
+                        if let error = searchError { Text(error).font(.footnote).foregroundStyle(.red).padding() }
+                        Spacer()
+                    }.padding(.top)
+                    .navigationTitle("場所を探す")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar { Button("完了") { showSearch = false } }
+                }.presentationDetents([.medium, .large])
+            }
             .sheet(item: $selectedSpot) { spot in
                 if let current = store.spots.first(where: { $0.id == spot.id }) {
                     SpotDetailView(spot: current)
@@ -259,6 +271,8 @@ struct ExploreView: View {
             }
             camera = .region(.init(center: first.placemark.coordinate, span: .init(latitudeDelta: 0.06, longitudeDelta: 0.06)))
             searchResultName = first.name ?? trimmed
+            searchError = nil
+            showSearch = false
         } catch {
             searchError = "ネットワーク接続を確認して、もう一度検索してください。"
         }
@@ -266,7 +280,9 @@ struct ExploreView: View {
 }
 
 struct SpotDetailView: View {
+    @EnvironmentObject private var store: SpotStore
     let spot: Spot
+    private var profile: FacilityProfile { store.profile(for: spot) }
 
     var body: some View {
         NavigationStack {
@@ -283,6 +299,9 @@ struct SpotDetailView: View {
                     Text(spot.address)
                     Text(spot.note)
                 }
+                if !profile.menu.isEmpty { Section("メニュー") { Text(profile.menu) } }
+                if !profile.hours.isEmpty { Section("営業時間") { Text(profile.hours) } }
+                if !profile.memo.isEmpty { Section("お知らせ") { Text(profile.memo) } }
                 Section("設備") {
                     Label(spot.hasWifi ? "Wi-Fiあり" : "Wi-Fi情報なし", systemImage: "wifi")
                     Label(spot.hasPower ? "電源あり" : "電源情報なし", systemImage: "powerplug")

@@ -7,7 +7,7 @@ struct RootView: View {
             ExploreView()
                 .tabItem { Label("空席マップ", systemImage: "map") }
             FacilityUpdateView()
-                .tabItem { Label("施設用デモ", systemImage: "slider.horizontal.3") }
+                .tabItem { Label("施設管理", systemImage: "storefront") }
             VisitSettingsView(history: location.history)
                 .tabItem { Label("検知・履歴", systemImage: "clock.arrow.circlepath") }
         }

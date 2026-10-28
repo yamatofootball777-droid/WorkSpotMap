@@ -41,3 +41,16 @@ swiftc WorkSpotMap/VisitHistory.swift Tests/VisitHistoryChecks.swift -o /tmp/wor
 6. 実機のGPS精度、電池消費、移動時の検知は別途フィールドテストが必要。
 
 位置情報APIの根拠: [Appleの使用中許可](https://developer.apple.com/documentation/corelocation/cllocationmanager/requestwheninuseauthorization())、[位置更新](https://developer.apple.com/documentation/corelocation/cllocationmanager/startupdatinglocation())。
+
+## v2.1 施設管理と画面整理
+- 地図画面の上部タイトル・検索欄を削除。地図を先頭にし、検索・カテゴリ・空席フィルターは地図下の検索ボタンから開きます。
+- 「施設管理」タブで空いている／やや混雑／満席を大きなボタンで更新。
+- 名前、季節メニューなどの自由文、営業時間、キャンペーン・臨時休業メモを編集して保存。地図の施設名と詳細に反映。
+- 施設情報はこの端末のみに保存。実施設の管理者認証・別端末への公開は未接続です。
+- 既存の50サンプル、PRピン、広告、任意の位置情報・同意制履歴を維持。
+
+施設情報の保存・既存v1データ移行の検証:
+```sh
+swiftc WorkSpotMap/Models.swift WorkSpotMap/FacilityProfile.swift WorkSpotMap/SpotStore.swift Tests/FacilityProfileChecks.swift -o /tmp/workspot-profile-checks
+/tmp/workspot-profile-checks
+```
