@@ -61,3 +61,9 @@ swiftc WorkSpotMap/Models.swift WorkSpotMap/FacilityProfile.swift WorkSpotMap/Sp
 - 広い画面では地図の最大幅を560ptに抑えて中央配置。狭い画面では利用可能幅に合わせて正方形を縮小します。
 - 画面の高さが足りない場合も広告領域を先に確保し、地図側をスクロールできます。
 - 地図サービスの選択より見やすさを優先。ただし現在のアプリはiOS/iPadOS用であり、Android・Web対応を追加したわけではありません。
+
+## 公開Web版
+
+https://workspot-map-yamato.yamato-football-777.chatgpt.site
+
+スマホ・タブレット・PCのブラウザで利用できます。公開ソースは `web/dist/`、開発手順・外部サービス・保存範囲は `web/README.md` を参照。正方形の地図と固定広告を維持。施設編集と履歴は各ブラウザ内のみで、他利用者への共有は行いません。Sitesで配信しています。
