@@ -16,3 +16,5 @@ nav button{border:0}nav button[aria-current]{color:#222}
 .switch-row input{accent-color:#484d53}
 #search-form .switch-row{margin:4px 0 18px}
 #search-submit{margin-top:0}#toast{background:#34383c}
+
+.maplibregl-ctrl-top-left{top:64px}.maplibregl-ctrl-attrib{font-size:10px!important}.maplibregl-ctrl button{min-height:0;padding:0}.pin{width:auto;min-width:45px;min-height:34px;height:34px;padding:4px 8px;font-size:12px;border-radius:18px;color:#fff}.pin.sponsor{width:155px;height:auto;min-height:56px;border-radius:12px}.user-location{width:18px;height:18px;border:3px solid white;border-radius:50%;background:#3478f6;box-shadow:0 1px 5px #0005}

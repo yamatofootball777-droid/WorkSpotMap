@@ -12,10 +12,10 @@
 施設編集は各ブラウザ内のデモで、他の利用者への共有・管理者認証はありません。iOS版からのデータ移行は行いません。
 
 ## 外部サービス
-Leaflet 1.9.4（同梱ライセンス）、OpenStreetMapの地図、Photonの検索APIを使用。
-OSM標準タイルは通常のブラウザキャッシュと可視著作権表示を使用し、先読み・オフライン保存は行いません。
+MapLibre GL JS 4.7.1（同梱ライセンス）、OpenFreeMap Libertyのベクター地図、Photonの検索APIを使用。
+日本語名を優先し、駅・バス停を強調。初期表示は空き施設のみで、条件内の空き施設が画面外なら表示されるまで縮小します。
 Photonはユーザーによる検索送信時のみ呼び出し、セッション内キャッシュと連打抑止を使用。無料のデモサービスに可用性保証はありません。利用拡大時は専用プロバイダーへ切り替えてください。
-https://operations.osmfoundation.org/policies/tiles/
+https://openfreemap.org/
 https://github.com/komoot/photon
 
 ## 検証
