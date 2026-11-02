@@ -72,3 +72,7 @@ https://workspot-map-yamato.yamato-football-777.chatgpt.site
 ホーム画面の表示名は「あきどこ」。内部のターゲット名・Bundle ID・保存キーは維持しています。
 `WorkSpotMap/Assets.xcassets/AppIcon.appiconset` はオフホワイト（#F8F9F5）背景、エメラルド（#007B53）のピン、白い椅子と2本のアクセント線。外周の角丸はOSが適用します。
 `swift Scripts/GenerateAppIcon.swift` で20〜1024pxの必要サイズを再生成できます。
+
+## 施設ピン
+`FacilityMapPin.swift` に通常／スポンサー共通の地図ピン描画を分離。通常は白い種別マークのみ、スポンサーは大型の縦長ピン内にマーク・最大2行の施設名（末尾省略）・PRを表示します。公共施設は建物、カフェはカップ、コワーキングはノートPCです。両者とも既存の混雑色を使用し、Mapのbottomアンカーをピン先端に合わせています。
+SwiftUI Previewで全4色と長い施設名を確認できます。

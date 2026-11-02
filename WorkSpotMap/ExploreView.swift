@@ -40,33 +40,7 @@ struct ExploreView: View {
                             ForEach(filtered) { spot in
                                 Annotation("", coordinate: spot.coordinate, anchor: .bottom) {
                                     Button { selectedSpot = spot } label: {
-                                        if spot.isSponsored {
-                                            VStack(spacing: 4) {
-                                                HStack(spacing: 5) {
-                                                    Image(systemName: spot.category.symbol)
-                                                        .font(.system(size: 19, weight: .bold))
-                                                    Text("PR").font(.system(size: 10, weight: .bold))
-                                                        .padding(.horizontal, 4).padding(.vertical, 2)
-                                                        .background(.white.opacity(0.25), in: Capsule())
-                                                }
-                                                Text(spot.name)
-                                                    .font(.system(size: 11, weight: .bold))
-                                                    .lineLimit(1)
-                                            }
-                                            .foregroundStyle(.white)
-                                            .padding(.horizontal, 10).padding(.vertical, 9)
-                                            .background(spot.crowd.tint, in: RoundedRectangle(cornerRadius: 12))
-                                            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.white, lineWidth: 2))
-                                            .shadow(color: .black.opacity(0.25), radius: 5, y: 3)
-                                        } else {
-                                            Image(systemName: spot.category.symbol)
-                                                .font(.system(size: 13, weight: .semibold))
-                                                .foregroundStyle(.white)
-                                                .frame(width: 31, height: 31)
-                                                .background(spot.crowd.tint, in: Circle())
-                                                .overlay(Circle().strokeBorder(.white, lineWidth: 2))
-                                                .shadow(radius: 2)
-                                        }
+                                        FacilityMapPin(spot: spot)
                                     }
                                     .buttonStyle(.plain)
                                     .accessibilityLabel("\(spot.name)、\(spot.crowd.rawValue)\(spot.isSponsored ? "、広告掲載施設" : "")")
