@@ -1,4 +1,4 @@
-# WorkSpotMap — 空席マップ v2 (SwiftUI / MapKit)
+# あきどこ — WorkSpotMap v2 (SwiftUI / MapKit)
 
 ## 起動
 Xcode 16以降で `WorkSpotMap.xcodeproj` を開き、iOS 17以上のシミュレータでRun。実機は自分の署名チームを設定してください。
@@ -67,3 +67,8 @@ swiftc WorkSpotMap/Models.swift WorkSpotMap/FacilityProfile.swift WorkSpotMap/Sp
 https://workspot-map-yamato.yamato-football-777.chatgpt.site
 
 スマホ・タブレット・PCのブラウザで利用できます。公開ソースは `web/dist/`、開発手順・外部サービス・保存範囲は `web/README.md` を参照。正方形の地図と固定広告を維持。施設編集と履歴は各ブラウザ内のみで、他利用者への共有は行いません。Sitesで配信しています。
+
+## アプリのブランド
+ホーム画面の表示名は「あきどこ」。内部のターゲット名・Bundle ID・保存キーは維持しています。
+`WorkSpotMap/Assets.xcassets/AppIcon.appiconset` はオフホワイト（#F8F9F5）背景、エメラルド（#007B53）のピン、白い椅子と2本のアクセント線。外周の角丸はOSが適用します。
+`swift Scripts/GenerateAppIcon.swift` で20〜1024pxの必要サイズを再生成できます。
