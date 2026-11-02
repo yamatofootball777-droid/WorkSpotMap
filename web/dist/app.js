@@ -19,13 +19,25 @@ if(window.maplibregl){try{
 }catch{$('map').textContent='このブラウザでは地図を表示できません。WebGLの設定を確認してください。'}}
 function filtered(){return spots.map(data).filter(s=>s.level===0&&(!filters.category||s.category===filters.category)&&(filters.price===''||(filters.price==='over'?s.price>2000:s.price<=Number(filters.price))))}
 function updateCount(){const n=filtered().filter(s=>distance(searchOrigin,s)<=1000).length;$('result-count').textContent=`1km以内・空き${n}件`;$('result-count').title='絞り込み条件に合うサンプル施設';}
+function createFacilityPin(s){
+ const node=document.createElement('button');node.type='button';node.className='pin'+(s.sponsored?' sponsor':'');node.style.setProperty('--pin-color',colors[s.level]);
+ const icons={
+  cafe:'<path d="M5 5h12v8a6 6 0 0 1-12 0V5Zm12 2h2a3 3 0 0 1 0 6h-2M4 21h16"/>',
+  public:'<path d="m3 8 9-5 9 5H3Zm2 13h14M6 10v8m6-8v8m6-8v8"/>',
+  laptop:'<rect x="4" y="4" width="16" height="12" rx="1"/><path d="M2 20h20"/>'
+ };
+ const icon=s.category==='カフェ'?icons.cafe:s.category==='コワーキング'?icons.laptop:icons.public;
+ // SVG markup is constant; facility names are inserted separately as text only.
+ node.innerHTML='<svg class="pin-shape" viewBox="0 0 100 130" preserveAspectRatio="none" aria-hidden="true"><path d="M50 129C28 106 1 83 1 47C1 21 19 1 50 1S99 21 99 47C99 83 72 106 50 129Z"/></svg><span class="pin-content"><svg class="pin-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icon+'</svg></span>';
+ if(s.sponsored){const name=document.createElement('span');name.className='pin-name';name.textContent=s.name;const pr=document.createElement('span');pr.className='pin-pr';pr.textContent='PR';node.querySelector('.pin-content').append(name,pr)}
+ node.setAttribute('aria-label',`${s.name}・${levels[s.level]}${s.sponsored?'・広告掲載施設':''}`);node.title=`${s.name}・${s.category}・${levels[s.level]}`;
+ return node;
+}
 function renderMap(){
  const list=filtered();updateCount();if(!map)return;
  markers.forEach(m=>m.remove());markers.clear();
  for(const s of list){
-  const node=document.createElement('button');node.type='button';node.className='pin'+(s.sponsored?' sponsor':'');node.style.background=colors[s.level];
-  node.textContent=s.sponsored?`${s.level===0?'空き':levels[s.level]} · PR · ${s.name}`:(s.level===0?'空き':levels[s.level]);
-  node.setAttribute('aria-label',`${s.name}・${levels[s.level]}`);node.title=`${s.name}・${s.category}・${levels[s.level]}`;
+  const node=createFacilityPin(s);
   node.onclick=()=>detail(s.id);
   markers.set(s.id,new maplibregl.Marker({element:node,anchor:'bottom'}).setLngLat([s.lon,s.lat]).addTo(map));
  }
@@ -37,7 +49,7 @@ function ensureVacancyVisible(){
  if(!vacant.length){$('location-status').textContent='条件に合う空き施設がありません。';return}
  const box=$('map').getBoundingClientRect();if(box.width<1||box.height<1)return;
  const mx=Math.min(85,box.width/4),top=Math.min(105,box.height/3),bottom=45;
- const visible=()=>vacant.some(s=>{const p=map.project([s.lon,s.lat]);return p.x>=mx&&p.x<=box.width-mx&&p.y>=top&&p.y<=box.height-bottom});
+ const visible=()=>vacant.some(s=>{const p=map.project([s.lon,s.lat]);return p.x>=mx&&p.x<=box.width-mx&&p.y>=top+(s.sponsored?150:48)&&p.y<=box.height-bottom});
  let expanded=false;
  for(let step=0;step<32&&!visible()&&map.getZoom()>0;step++){map.jumpTo({zoom:Math.max(0,map.getZoom()-.5)});expanded=true}
  if(!visible()){

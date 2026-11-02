@@ -22,3 +22,13 @@ nav button{border:0}nav button[aria-current]{color:#222}
 .map-caption{padding:5px 8px 5px 12px;gap:8px;min-height:52px}.area-summary{display:flex;align-items:center;flex-wrap:wrap;gap:3px 10px;min-width:0;flex:1}#area{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}.count{margin-left:0;font-size:11px}.map-search{pointer-events:auto;display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;padding:10px;background:transparent;border:0}.filter-actions{display:flex;gap:10px}.filter-actions button{flex:1;margin:0}.filter-actions .primary{flex:2}@media(max-width:360px){.map-caption{left:8px;right:8px}.area-summary{gap:3px 6px}.count{font-size:10px}}
 
 #search-filters{border-top:1px solid #e4e6e9;margin-top:22px;padding-top:2px}#search-filters h2{margin:16px 0}#search-filters label{margin-bottom:14px}
+
+/* The marker's bottom edge is its geographic tip. */
+.pin,.pin.sponsor{display:block;width:36px;height:48px;min-width:0;min-height:0;padding:0;border:0;border-radius:0;background:transparent;color:#fff;box-shadow:none;filter:drop-shadow(0 2px 2px #0003);overflow:visible}
+.pin.sponsor{width:116px;height:150px}.pin:hover{filter:drop-shadow(0 2px 3px #0005)}
+.pin-shape{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;fill:var(--pin-color);stroke:#fff;stroke-width:1.6}
+.pin-content{position:absolute;inset:0;display:flex;align-items:center;flex-direction:column;pointer-events:none;padding-top:8px;overflow:hidden;clip-path:polygon(0 0,100% 0,100% 64%,50% 100%,0 64%)}
+.pin-symbol{width:19px;height:19px;flex-shrink:0;color:#fff}.sponsor .pin-content{padding-top:15px;gap:5px}.sponsor .pin-symbol{width:27px;height:29px}
+.pin-name{width:92px;height:32px;line-height:16px;font-size:12px;font-weight:700;text-align:center;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;color:#fff}
+.pin-pr{font-size:9px;line-height:13px;padding:1px 5px;border-radius:4px;background:#fff;color:var(--pin-color);font-weight:700}
+.pin:focus-visible{outline:3px solid #439bff;outline-offset:3px}

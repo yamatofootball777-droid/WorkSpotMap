@@ -1,5 +1,8 @@
 # あきどこ — WorkSpotMap v2 (SwiftUI / MapKit)
 
+## 現在の開発対象
+2026-11-02以降はWeb版のみを開発・公開します。ユーザーから再開の明示指示があるまでiOS版は変更しません。
+
 ## 起動
 Xcode 16以降で `WorkSpotMap.xcodeproj` を開き、iOS 17以上のシミュレータでRun。実機は自分の署名チームを設定してください。
 
