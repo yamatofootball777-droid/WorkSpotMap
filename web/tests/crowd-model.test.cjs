@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+const {estimate}=require('../dist/crowd-model.js');
+const now=10000000,id='local-test',visit={spotID:id,last:now,end:null};
+assert.equal(estimate({},[],id,false,now).level,3);
+assert.equal(estimate({searchAt:now,goingAt:now},[visit],id,true,now).level,3,'weak signals alone must not claim vacancy');
+for(const level of [0,1,2])assert.equal(estimate({review:{level,at:now}},[],id,false,now).level,level);
+assert.equal(estimate({review:{level:2,at:now-3600000}},[],id,false,now).level,3);
+assert.equal(estimate({review:{level:0,at:now+1}},[],id,false,now).level,3);
+assert.equal(estimate({},[visit],id,false,now).nearby,false,'no location use without separate consent');
+assert.equal(estimate({},[visit],id,true,now).nearby,true);
+assert.equal(estimate({},[{...visit,end:now}],id,true,now).nearby,false);
+assert.equal(estimate({},[{...visit,last:now-60000}],id,true,now).nearby,false);
+assert.equal(estimate({goingAt:now-1800000,searchAt:now-1800000},[],id,false,now).going,false);
+assert.equal(estimate({goingAt:now-1800000,searchAt:now-1800000},[],id,false,now).searched,false);
+assert.equal(estimate({review:{level:2,at:now},goingAt:now,searchAt:now},[visit],id,true,now).level,2);
+console.log('PASS: missing evidence, expiry, future dates, consent, exits and combined evidence');

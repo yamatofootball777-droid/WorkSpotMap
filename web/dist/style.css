@@ -32,3 +32,5 @@ nav button{border:0}nav button[aria-current]{color:#222}
 .pin-name{width:92px;height:32px;line-height:16px;font-size:12px;font-weight:700;text-align:center;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;color:#fff}
 .pin-pr{font-size:9px;line-height:13px;padding:1px 5px;border-radius:4px;background:#fff;color:var(--pin-color);font-weight:700}
 .pin:focus-visible{outline:3px solid #439bff;outline-offset:3px}
+
+.facility-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.coordinate-fields{display:flex;gap:12px}.coordinate-fields label{flex:1;min-width:0}#profile-form details{margin:18px 0}#profile-form>button{margin-bottom:8px}#profile-form>button[hidden]{display:none}.review-form{margin-top:20px}.evidence{margin-top:24px}.evidence details{margin-top:18px}.evidence button{width:100%}#estimate-consent button{margin-top:10px;width:100%}

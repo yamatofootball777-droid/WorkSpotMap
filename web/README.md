@@ -29,3 +29,12 @@ https://github.com/komoot/photon
 施設ピンは白い種別マークを内包し、スポンサーのみ大型の縦長ピン内に施設名（最大2行・末尾省略）とPRを追加。先端は施設座標に固定。混雑色・空席のみの初期表示を維持しています。
 
 混み具合の絞り込みは「空きのみ」（初期値・リセット時）、「やや混雑も表示」（空き＋やや混雑）、「全表示」（満席・不明も含む）。1km以内の空き件数は空き施設のみを集計します。
+
+## Facility creation and local crowd estimate prototype
+Facility management supports adding a facility with name, address, category and price. Select a Photon address result or enter coordinates. Address lookup sends only the entered address to Photon. Profiles remain local; new facilities start with unknown crowd status.
+
+Reviews (latest one per facility/browser, 60 minutes), going intent (30 minutes), nearby place searches (30 minutes, deduplicated per facility/browser) and separately consented active nearby visits feed an experimental estimate. Reviews are primary; other signals are weak indicators and cannot alone establish occupancy. Recent facility updates take priority for 60 minutes. Legacy sample values are explicitly labelled. Location cannot confirm indoor entry or seating. Weights are uncalibrated.
+
+No server aggregation, multi-user sharing or manager authentication is implemented. All contributions remain in this browser. Location consent resets after reload.
+
+Validation: `node --test tests/crowd-model.test.cjs` covers missing evidence, expiration, future dates, location consent, exits and combined signals. Browser checks cover address selection, creation, reload persistence, review submission, going cancellation and manager override. Physical GPS remains untested.
